@@ -30,7 +30,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}/california-scraper
+  IMAGE_NAME: california-scraper
 
 jobs:
   # Build and push Docker image (only when needed)
