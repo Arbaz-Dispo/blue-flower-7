@@ -5,12 +5,10 @@ on:
     inputs:
       file_numbers:
         description: 'Business file numbers to search for (comma-separated or JSON array, e.g., "123,456,789" or ["123","456","789"])'
-        required: false
-        default: '202250419109'
+        required: true
       request_id:
         description: 'Unique request ID (for tracking concurrent requests)'
-        required: false
-        default: ''
+        required: true
       test_run:
         description: 'Test run (optional)'
         required: false
@@ -143,12 +141,20 @@ jobs:
     - name: Parse file numbers (fast)
       id: parse-files
       run: |
-        FILE_NUMBERS="${{ github.event.inputs.file_numbers || '202250419109' }}"
-        REQUEST_ID="${{ github.event.inputs.request_id || '' }}"
+        FILE_NUMBERS="${{ github.event.inputs.file_numbers }}"
+        REQUEST_ID="${{ github.event.inputs.request_id }}"
         
-        # Generate a fallback request ID if none provided
+        # Validate required inputs
+        if [ -z "$FILE_NUMBERS" ]; then
+          echo "Error: file_numbers is required"
+          echo '{"error": "file_numbers is required", "status": "failed"}' > error_response.json
+          exit 1
+        fi
+        
         if [ -z "$REQUEST_ID" ]; then
-          REQUEST_ID="fallback-${{ github.run_number }}-$(date +%s)"
+          echo "Error: request_id is required"
+          echo '{"error": "request_id is required", "status": "failed"}' > error_response.json
+          exit 1
         fi
         
         # Quick count without complex parsing
@@ -166,8 +172,8 @@ jobs:
       id: scraper
       env:
         SOLVECAPTCHA_API_KEY: ${{ secrets.SOLVECAPTCHA_API_KEY }}
-        FILE_NUMBERS: ${{ github.event.inputs.file_numbers || '202250419109' }}
-        REQUEST_ID: ${{ steps.parse-files.outputs.request_id }}
+        FILE_NUMBERS: ${{ github.event.inputs.file_numbers }}
+        REQUEST_ID: ${{ github.event.inputs.request_id }}
       run: |
         echo "🚀 Starting scraper immediately..."
         # Run with minimal overhead
