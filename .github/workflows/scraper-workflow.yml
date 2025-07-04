@@ -188,7 +188,7 @@ jobs:
           --memory="2g" \
           --cpus="1.5" \
           "$IMAGE_TAG" \
-          timeout 600s python solve_captcha_get_cookies.py
+          timeout 600s python scraper.py
         # Quick result check
         [ -f "remaining_files.json" ] && echo "blocking_detected=true" >> $GITHUB_OUTPUT || echo "blocking_detected=false" >> $GITHUB_OUTPUT
         
