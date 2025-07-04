@@ -28,7 +28,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ toLower(github.repository) }}/california-scraper
+  IMAGE_NAME: arbaz-dispo/blue-flower-7/california-scraper
 
 jobs:
   # Build and push Docker image (only when needed)
